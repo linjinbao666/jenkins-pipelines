@@ -11,7 +11,6 @@ pipeline {
             }
         }
 
-        // 打印目录文件
         stage('打印目录文件') {
             steps {
                 sh 'pwd'
@@ -45,7 +44,7 @@ pipeline {
                 kubectl apply -f common/jenkins-sample/k8s-deploy.yaml
 
                 # 等待部署完成
-                kubectl rollout status -f common/jenkins-sample/k8s-deploy.yaml --timeout=300s
+                kubectl rollout status deployment/jenkins-sample --timeout=300s
                 '''
             }
         }
