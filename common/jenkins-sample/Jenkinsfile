@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+    environment {
+        K8S_NAMESPACE  = "default"
+    }
+    stages {
+        stage('检出代码') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('构建并且推送镜像') {
+            steps {
+                sh '''
+                # 删除已有构建 Pod（避免重复）
+                kubectl delete -f kaniko-image-build.yaml --ignore-not-found
+
+                # 使用本地 kaniko YAML 文件创建构建 Pod
+                kubectl apply -f kaniko-image-build.yaml
+
+                # 等待 Pod 就绪
+                kubectl wait --for=condition=Ready pod/$(kubectl get pod -l job=kaniko-build -o name) --timeout=300s
+
+                # 查看构建日志
+                kubectl logs -f $(kubectl get pod -l job=kaniko-build -o name)
+                '''
+            }
+        }
+
+        stage('部署应用') {
+            steps {
+                sh '''
+                # 应用 k8s-deploy.yaml 进行部署
+                kubectl apply -f k8s-deploy.yaml
+
+                # 等待部署完成
+                kubectl rollout status -f k8s-deploy.yaml --timeout=300s
+                '''
+            }
+        }
+    }
+}
