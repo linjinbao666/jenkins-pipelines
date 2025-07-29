@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         K8S_NAMESPACE  = "default"
+        KUBECONFIG = "${env.HOME}/.kube/config"
     }
     stages {
         stage('检出代码') {
