@@ -23,6 +23,9 @@ pipeline {
         stage('构建并且推送镜像') {
             steps {
                 sh '''
+                ls -al 
+                pwd
+                
                 # 删除已有构建 Pod（避免重复）
                 kubectl delete -f kaniko-image-build.yaml --ignore-not-found
 
