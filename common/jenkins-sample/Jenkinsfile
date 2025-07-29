@@ -23,14 +23,11 @@ pipeline {
         stage('构建并且推送镜像') {
             steps {
                 sh '''
-                ls -al 
-                pwd
-                
                 # 删除已有构建 Pod（避免重复）
-                kubectl delete -f kaniko-image-build.yaml --ignore-not-found
+                kubectl delete -f common/jenkins-sample/kaniko-image-build.yaml --ignore-not-found
 
                 # 使用本地 kaniko YAML 文件创建构建 Pod
-                kubectl apply -f kaniko-image-build.yaml
+                kubectl apply -f common/jenkins-sample/kaniko-image-build.yaml
 
                 # 等待 Pod 就绪
                 kubectl wait --for=condition=Ready pod/$(kubectl get pod -l job=kaniko-build -o name) --timeout=300s
@@ -45,10 +42,10 @@ pipeline {
             steps {
                 sh '''
                 # 应用 k8s-deploy.yaml 进行部署
-                kubectl apply -f k8s-deploy.yaml
+                kubectl apply -f common/jenkins-sample/k8s-deploy.yaml
 
                 # 等待部署完成
-                kubectl rollout status -f k8s-deploy.yaml --timeout=300s
+                kubectl rollout status -f common/jenkins-sample/k8s-deploy.yaml --timeout=300s
                 '''
             }
         }
