@@ -30,7 +30,7 @@ pipeline {
                 kubectl apply -f common/jenkins-sample/kaniko-image-build.yaml
 
                 # 等待 Pod 就绪
-                kubectl wait --for=condition=Ready pod/$(kubectl get pod -l job=kaniko-build -o name) --timeout=300s
+                kubectl wait --for=condition=Ready $(kubectl get pod -l job=kaniko-build -o name) --timeout=300s
 
                 # 查看构建日志
                 kubectl logs -f $(kubectl get pod -l job=kaniko-build -o name)
