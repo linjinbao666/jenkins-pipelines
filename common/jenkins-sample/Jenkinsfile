@@ -11,6 +11,15 @@ pipeline {
             }
         }
 
+        // 打印目录文件
+        stage('打印目录文件') {
+            steps {
+                sh 'pwd'
+                sh 'ls -la'
+                sh 'env'
+            }
+        }
+
         stage('构建并且推送镜像') {
             steps {
                 sh '''
